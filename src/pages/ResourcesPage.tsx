@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Search, DraftingCompass } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const PageNavigationMenu = () => (
   <NavigationMenu className="py-4 border-b">
@@ -31,6 +32,11 @@ const PageNavigationMenu = () => (
         <NavigationMenuItem>
           <Link to="/os/ms-dos">
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>MS-DOS</NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+         <NavigationMenuItem>
+          <Link to="/os/android">
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>Android</NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
@@ -57,13 +63,16 @@ const allResources = [
   { title: "The Linux Kernel Archives", description: "Official source for the Linux kernel.", linkUrl: "https://www.kernel.org/", category: "Linux" },
   { title: "Ubuntu Official Documentation", description: "Guides, tutorials, and release notes for Ubuntu Linux.", linkUrl: "https://help.ubuntu.com/", category: "Linux" },
   { title: "ArchWiki", description: "Comprehensive community-maintained wiki for Arch Linux.", linkUrl: "https://wiki.archlinux.org/", category: "Linux" },
+  { title: "DistroWatch", description: "Information and news about Linux distributions.", linkUrl: "https://distrowatch.com/", category: "Linux" },
   { title: "Apple Developer - macOS", description: "Official macOS development resources from Apple.", linkUrl: "https://developer.apple.com/macos/", category: "macOS" },
   { title: "MacRumors Forums", description: "Popular community forum for Apple products, including macOS.", linkUrl: "https://forums.macrumors.com/", category: "macOS" },
   { title: "Inside Macintosh (Vintage)", description: "Historical documentation for Classic Mac OS.", linkUrl: "http://vintagemacmuseum.com/docs/insidemac/", category: "macOS" },
   { title: "PCjs Machines (MS-DOS Emulation)", description: "Emulate MS-DOS and other vintage systems in your browser.", linkUrl: "https://www.pcjs.org/", category: "MS-DOS" },
   { title: "MS-DOS Commands Reference", description: "A quick reference for common MS-DOS commands.", linkUrl: "https://www.computerhope.com/msdos.htm", category: "MS-DOS" },
+  { title: "Android Developers Official Site", description: "Official documentation, tools, and guides for Android development.", linkUrl: "https://developer.android.com/", category: "Android" },
+  { title: "XDA Developers Forums", description: "Largest Android community for news, reviews, and custom ROM development.", linkUrl: "https://xdaforums.com/", category: "Android" },
+  { title: "AOSP - Android Open Source Project", description: "Source code and information about the Android Open Source Project.", linkUrl: "https://source.android.com/", category: "Android" },
   { title: "OSDev Wiki", description: "A wiki for operating system development.", linkUrl: "https://wiki.osdev.org/", category: "General OS" },
-  { title: "DistroWatch", description: "Information and news about Linux distributions.", linkUrl: "https://distrowatch.com/", category: "Linux" },
 ];
 
 
@@ -75,7 +84,7 @@ const ResourcesPage: React.FC = () => {
     resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (resource.category && resource.category.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  ).sort((a, b) => a.title.localeCompare(b.title)); // Sort alphabetically by title
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -123,11 +132,11 @@ const ResourcesPage: React.FC = () => {
                   category={resource.category}
                   linkText="Visit Site"
                 />
-              ))}
+              ))}\
             </div>
           ) : (
             <p className="text-center text-muted-foreground py-10">No resources found matching your search criteria.</p>
-          )}
+          )}\
         </ScrollArea>
         
         <Separator className="my-12" />
@@ -139,6 +148,9 @@ const ResourcesPage: React.FC = () => {
             rows={4} 
             className="max-w-xl mx-auto"
           />
+          <div className="text-center mt-4">
+            {/* <Button>Submit Suggestion</Button> Functionality not implemented */}
+          </div>
         </section>
       </main>
       <footer className="text-center py-6 border-t text-muted-foreground">
