@@ -34,6 +34,11 @@ const PageNavigationMenu = () => (
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
+          <Link to="/os/android">
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>Android</NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
           <Link to="/comparison">
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>Compare</NavigationMenuLink>
           </Link>
@@ -54,18 +59,18 @@ const PageNavigationMenu = () => (
 );
 
 const comparisonData = [
-  { feature: "Primary Use Case", msDos: "Early PCs, command-line tasks", linux: "Servers, embedded, desktop, cloud", macOS: "Desktop, creative professionals" },
-  { feature: "Kernel Type", msDos: "Monolithic (simple)", linux: "Monolithic (modular)", macOS: "Hybrid (XNU)" },
-  { feature: "License", msDos: "Proprietary", linux: "Open Source (GPL)", macOS: "Proprietary (Darwin core is open)" },
-  { feature: "Multitasking", msDos: "No (single-tasking)", linux: "Yes (preemptive)", macOS: "Yes (preemptive)" },
-  { feature: "Multi-User", msDos: "No", linux: "Yes", macOS: "Yes" },
-  { feature: "GUI", msDos: "Primarily CLI (Windows shell later)", linux: "Various (GNOME, KDE, XFCE, etc.)", macOS: "Aqua (proprietary)" },
-  { feature: "Command Line", msDos: "COMMAND.COM", linux: "Bash, Zsh, etc.", macOS: "Terminal (Bash/Zsh)" },
-  { feature: "Package Management", msDos: "N/A (manual install)", linux: "APT, YUM, Pacman, etc.", macOS: "App Store, Homebrew" },
-  { feature: "Security Model", msDos: "Minimal", linux: "Robust (permissions, SELinux)", macOS: "Robust (permissions, Gatekeeper)" },
-  { feature: "Hardware Support", msDos: "Limited (legacy IBM PC)", linux: "Very Broad", macOS: "Apple Hardware Only" },
-  { feature: "Cost", msDos: "Bundled (historical)", linux: "Free (most distributions)", macOS: "Bundled with Apple hardware" },
-  { feature: "Customizability", msDos: "Low", linux: "Very High", macOS: "Moderate" },
+  { feature: "Primary Use Case", msDos: "Early PCs, command-line tasks", linux: "Servers, embedded, desktop, cloud", macOS: "Desktop, creative professionals", android: "Smartphones, tablets, TVs, wearables" },
+  { feature: "Kernel Type", msDos: "Monolithic (simple)", linux: "Monolithic (modular)", macOS: "Hybrid (XNU)", android: "Linux (modified monolithic)" },
+  { feature: "License", msDos: "Proprietary", linux: "Open Source (GPL)", macOS: "Proprietary (Darwin core is open)", android: "Open Source (AOSP - Apache/GPL), GMS is proprietary" },
+  { feature: "Multitasking", msDos: "No (single-tasking)", linux: "Yes (preemptive)", macOS: "Yes (preemptive)", android: "Yes (managed lifecycle)" },
+  { feature: "Multi-User", msDos: "No", linux: "Yes", macOS: "Yes", android: "Yes (on most devices/profiles)" },
+  { feature: "GUI", msDos: "Primarily CLI (Windows shell later)", linux: "Various (GNOME, KDE, XFCE, etc.)", macOS: "Aqua (proprietary)", android: "Material Design (stock), various OEM skins" },
+  { feature: "Command Line", msDos: "COMMAND.COM", linux: "Bash, Zsh, etc.", macOS: "Terminal (Bash/Zsh)", android: "ADB shell (via developer tools)" },
+  { feature: "Package Management", msDos: "N/A (manual install)", linux: "APT, YUM, Pacman, etc.", macOS: "App Store, Homebrew", android: "Google Play Store, F-Droid, manual (APK)" },
+  { feature: "Security Model", msDos: "Minimal", linux: "Robust (permissions, SELinux)", macOS: "Robust (permissions, Gatekeeper)", android: "Permissions, sandboxing, verified boot, Play Protect" },
+  { feature: "Hardware Support", msDos: "Limited (legacy IBM PC)", linux: "Very Broad", macOS: "Apple Hardware Only", android: "Extremely Broad (various manufacturers)" },
+  { feature: "Cost", msDos: "Bundled (historical)", linux: "Free (most distributions)", macOS: "Bundled with Apple hardware", android: "Free (AOSP), GMS licensing for manufacturers" },
+  { feature: "Customizability", msDos: "Low", linux: "Very High", macOS: "Moderate", android: "Very High (AOSP), Moderate to High (OEMs)" },
 ];
 
 const ComparisonPage: React.FC = () => {
@@ -74,8 +79,11 @@ const ComparisonPage: React.FC = () => {
 
   const filteredData = comparisonData.filter(item => {
     if (filter === "all") return true;
-    // This is a basic filter example, could be expanded
-    return item.feature.toLowerCase().includes(filter.toLowerCase());
+    return item.feature.toLowerCase().includes(filter.toLowerCase()) ||
+           (item.msDos && item.msDos.toLowerCase().includes(filter.toLowerCase())) ||
+           (item.linux && item.linux.toLowerCase().includes(filter.toLowerCase())) ||
+           (item.macOS && item.macOS.toLowerCase().includes(filter.toLowerCase())) ||
+           (item.android && item.android.toLowerCase().includes(filter.toLowerCase()));
   });
 
   return (
@@ -97,22 +105,25 @@ const ComparisonPage: React.FC = () => {
         <header className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Operating System Comparison</h1>
           <p className="text-lg text-muted-foreground">
-            A side-by-side look at MS-DOS, Linux, and macOS.
+            A side-by-side look at MS-DOS, Linux, macOS, and Android.
           </p>
         </header>
         
         <div className="mb-6">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-[280px]">
-              <SelectValue placeholder="Filter by category (Example)" />
+              <SelectValue placeholder="Filter by keyword..." />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Filter Criteria (Example)</SelectLabel>
+                <SelectLabel>Filter Criteria</SelectLabel>
                 <SelectItem value="all">All Features</SelectItem>
                 <SelectItem value="kernel">Kernel</SelectItem>
                 <SelectItem value="gui">GUI</SelectItem>
                 <SelectItem value="security">Security</SelectItem>
+                <SelectItem value="license">License</SelectItem>
+                <SelectItem value="open source">Open Source</SelectItem>
+                <SelectItem value="proprietary">Proprietary</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -120,13 +131,14 @@ const ComparisonPage: React.FC = () => {
 
         <ScrollArea className="h-[600px] border rounded-md">
           <Table>
-            <TableCaption>Feature comparison of MS-DOS, Linux, and macOS.</TableCaption>
+            <TableCaption>Feature comparison of MS-DOS, Linux, macOS, and Android.</TableCaption>
             <TableHeader className="sticky top-0 bg-slate-100 z-10">
               <TableRow>
-                <TableHead className="w-[250px]">Feature</TableHead>
+                <TableHead className="w-[200px] min-w-[200px]">Feature</TableHead>
                 <TableHead>MS-DOS</TableHead>
                 <TableHead>Linux</TableHead>
                 <TableHead>macOS</TableHead>
+                <TableHead>Android</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -136,8 +148,14 @@ const ComparisonPage: React.FC = () => {
                   <TableCell>{row.msDos}</TableCell>
                   <TableCell>{row.linux}</TableCell>
                   <TableCell>{row.macOS}</TableCell>
+                  <TableCell>{row.android}</TableCell>
                 </TableRow>
-              ))}
+              ))}\
+              {filteredData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">No features match your filter criteria.</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </ScrollArea>
@@ -151,6 +169,7 @@ const ComparisonPage: React.FC = () => {
             rows={4} 
             className="max-w-xl mx-auto" 
           />
+           {/* <Button className="mt-4 mx-auto block">Save Notes</Button> Functionality not implemented */}
         </section>
       </main>
       <footer className="text-center py-6 border-t text-muted-foreground">
