@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight, DraftingCompass, History, Info, Lightbulb } from 'lucide-react';
+import { ArrowRight, DraftingCompass, History, Info, Lightbulb, Smartphone } from 'lucide-react';
 
 const PageNavigationMenu = () => (
   <NavigationMenu className="py-4 border-b">
@@ -29,6 +29,11 @@ const PageNavigationMenu = () => (
         <NavigationMenuItem>
           <Link to="/os/ms-dos">
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>MS-DOS</NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link to="/os/android">
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>Android</NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
@@ -59,6 +64,7 @@ const Homepage: React.FC = () => {
     { name: "Linux", slug: "linux", description: "Explore the world of Linux, its distributions, kernel, and open-source philosophy.", icon: <Info className="h-10 w-10 text-blue-500" /> },
     { name: "macOS", slug: "macos", description: "Discover macOS, Apple's operating system known for its design and ecosystem.", icon: <Info className="h-10 w-10 text-gray-500" /> },
     { name: "MS-DOS", slug: "ms-dos", description: "Learn about MS-DOS, the foundational command-line OS that powered early PCs.", icon: <Info className="h-10 w-10 text-green-500" /> },
+    { name: "Android", slug: "android", description: "Explore Android, Google's open-source mobile OS powering billions of devices.", icon: <Smartphone className="h-10 w-10 text-emerald-500" /> },
   ];
 
   return (
@@ -68,11 +74,11 @@ const Homepage: React.FC = () => {
         <section className="text-center py-12">
           <h1 className="text-5xl font-bold mb-4">Welcome to OS Archives</h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Your comprehensive guide to understanding MS-DOS, Linux, and macOS.
+            Your comprehensive guide to understanding MS-DOS, Linux, macOS, and Android.
           </p>
         </section>
 
-        <section className="grid md:grid-cols-3 gap-8 mb-12">
+        <section className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {osData.map((os) => (
             <Card key={os.slug} className="hover:shadow-xl transition-shadow duration-300 flex flex-col">
               <CardHeader className="flex flex-row items-center gap-4">
@@ -112,7 +118,7 @@ const Homepage: React.FC = () => {
                     <CardTitle>Compare Features</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <CardDescription>See a side-by-side comparison of MS-DOS, Linux, and macOS.</CardDescription>
+                    <CardDescription>See a side-by-side comparison of MS-DOS, Linux, macOS, and Android.</CardDescription>
                 </CardContent>
                 <CardFooter>
                     <Button variant="outline" onClick={() => navigate('/comparison')} className="w-full">Compare OS</Button>
