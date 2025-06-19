@@ -8,7 +8,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Code, History, ListChecks, Terminal, Brain, AlertTriangle, DraftingCompass } from 'lucide-react';
+import { Code, History, ListChecks, Terminal, Brain, AlertTriangle, DraftingCompass, Smartphone, LayoutGrid, Share2 } from 'lucide-react';
 
 const PageNavigationMenu = () => (
   <NavigationMenu className="py-4 border-b">
@@ -32,6 +32,11 @@ const PageNavigationMenu = () => (
         <NavigationMenuItem>
           <Link to="/os/ms-dos">
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>MS-DOS</NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link to="/os/android">
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>Android</NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
@@ -110,6 +115,27 @@ const osDetailsData: any = {
     cliExample: "DIR C:\\DOS\nCOPY A:\\CONFIG.SYS C:\\\nFORMAT A: /S",
     pros: ["Simple and lightweight", "Low resource requirements", "Direct hardware control possible"],
     cons: ["No multitasking/multiuser", "Limited memory management (640KB barrier)", "No built-in networking (required third-party software)", "Prone to crashes"]
+  },
+  "android": {
+    name: "Android",
+    history: [
+      { title: "2003: Android Inc. Founded", content: "Founded by Andy Rubin, Rich Miner, Nick Sears, and Chris White." },
+      { title: "2005: Google Acquires Android Inc.", content: "Google acquired Android Inc., marking its entry into the mobile OS space." },
+      { title: "2007: Open Handset Alliance Formed", content: "A consortium of companies to develop open standards for mobile devices, with Android as its flagship." },
+      { title: "2008: Android 1.0 Released", content: "The first commercial version of Android was released with the HTC Dream (T-Mobile G1)." },
+      { title: "Present: Dominant Mobile OS", content: "Android has become the most widely used mobile operating system globally, powering billions of devices." }
+    ],
+    features: [
+      { title: "Linux Kernel Based", description: "Built on a modified Linux kernel, providing core system services and hardware abstraction.", icon: <Code />, details: ["Open Source (AOSP)", "Hardware Abstraction Layer (HAL)"] },
+      { title: "App Ecosystem", description: "Vast number of applications available via Google Play Store and other app stores/sideloading.", icon: <LayoutGrid />, details: ["APK package format", "Rich application framework"] },
+      { title: "Customizable User Interface", description: "Highly customizable UI through launchers, widgets, and OEM skins (e.g., Samsung One UI, Pixel Experience).", icon: <Smartphone />, details: ["Material Design guidelines", "Extensive theming capabilities"] },
+      { title: "Intent System", description: "Powerful inter-process communication mechanism facilitating app integration and task delegation.", icon: <Share2 />, details: ["Explicit and Implicit Intents", "Enables seamless user experience across apps"] },
+    ],
+    architecture: "Layered architecture: Linux Kernel, Hardware Abstraction Layer (HAL), Android Runtime (ART) & Native Libraries, Java API Framework, System Apps.",
+    versions: "Annual dessert-themed releases (e.g., Pie, Quince Tart (Android 10), Red Velvet Cake (11), Snow Cone (12), Tiramisu (13), Upside Down Cake (14)). Also features various OEM-specific versions.",
+    cliExample: "adb devices\nadb shell pm list packages -f\nadb logcat *:W\nadb install app_name.apk",
+    pros: ["Open Source (AOSP provides flexibility)", "Large and diverse app ecosystem", "Highly customizable by users and OEMs", "Wide range of hardware choices from various manufacturers", "Strong developer community and tools"],
+    cons: ["OS fragmentation due to slow/inconsistent updates from OEMs", "Security concerns can be higher on non-Google devices or with sideloaded apps", "Google's increasing control over core Android services (GMS)", "Performance can vary significantly across devices and OEM skins", "Background process management can be aggressive on some OEM versions"]
   }
 };
 
@@ -124,9 +150,8 @@ const OSDetailPage: React.FC = () => {
     if (osName && osDetailsData[osName.toLowerCase()]) {
       setOsData(osDetailsData[osName.toLowerCase()]);
     } else {
-      // Handle OS not found, perhaps redirect to a 404 page or show a message
       console.error(`OS data not found for: ${osName}`);
-      navigate('/not-found'); // Assuming a NotFound page exists
+      navigate('/not-found'); 
     }
   }, [osName, navigate]);
 
@@ -140,6 +165,11 @@ const OSDetailPage: React.FC = () => {
       </div>
     );
   }
+
+  // Determine number of columns for TabsList based on number of tabs
+  const tabCount = 5; // History, Features, Architecture, CLI/GUI, Pros & Cons
+  const tabsListColsClass = `grid-cols-${tabCount > 4 ? Math.ceil(tabCount / 2) : tabCount} md:grid-cols-${tabCount}`;
+
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -165,7 +195,7 @@ const OSDetailPage: React.FC = () => {
         </header>
 
         <Tabs defaultValue="features" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 mb-6">
+          <TabsList className={`grid w-full ${tabsListColsClass} mb-6`}>
             <TabsTrigger value="history">History</TabsTrigger>
             <TabsTrigger value="features">Key Features</TabsTrigger>
             <TabsTrigger value="architecture">Architecture</TabsTrigger>
@@ -219,12 +249,12 @@ const OSDetailPage: React.FC = () => {
                 <ScrollArea className="h-[400px] pr-4 space-y-4">
                     <div>
                         <h3 className="font-semibold text-lg mb-1">Architecture Overview</h3>
-                        <p className="text-muted-foreground">{osData.architecture}</p>
+                        <p className="text-muted-foreground whitespace-pre-line">{osData.architecture}</p>
                     </div>
                     <Separator />
                     <div>
                         <h3 className="font-semibold text-lg mb-1">Key Versions / Distributions</h3>
-                        <p className="text-muted-foreground">{osData.versions}</p>
+                        <p className="text-muted-foreground whitespace-pre-line">{osData.versions}</p>
                     </div>
                 </ScrollArea>
               </CardContent>
@@ -243,8 +273,10 @@ const OSDetailPage: React.FC = () => {
                             className="font-mono bg-gray-900 text-green-400 text-sm p-4 rounded-md h-60"
                             rows={10}
                         />
-                        {osName === 'macos' && <img src="https://developer.apple.com/design/human-interface-guidelines/images/foundations-macos-windows_2x.png" alt="macOS GUI example" className="mt-4 rounded shadow-md"/> }
-                        {osName === 'linux' && <img src="https://assets.ubuntu.com/v1/4c056885-lightdm.png" alt="Linux GUI example (Ubuntu)" className="mt-4 rounded shadow-md"/> }
+                        {osName === 'macos' && <img src="https://developer.apple.com/design/human-interface-guidelines/images/foundations-macos-windows_2x.png" alt="macOS GUI example" className="mt-4 rounded shadow-md max-h-60 object-contain"/> }
+                        {osName === 'linux' && <img src="https://assets.ubuntu.com/v1/4c056885-lightdm.png" alt="Linux GUI example (Ubuntu)" className="mt-4 rounded shadow-md max-h-60 object-contain"/> }
+                        {/* TODO: Add a representative Android GUI screenshot if desired */}
+                        {osName === 'android' && <p className="text-muted-foreground mt-4">Android GUI is highly variable (Pixel UI, Samsung OneUI, etc.). A generic Material Design example could be shown here.</p>}
                     </ScrollArea>
                 </CardContent>
             </Card>
@@ -277,7 +309,7 @@ const OSDetailPage: React.FC = () => {
         <Separator className="my-8" />
         <div className="text-center">
             <Textarea placeholder={`Any specific notes or questions about ${osData.name}?`} className="max-w-lg mx-auto" />
-            <Button className="mt-4">Submit Note</Button>
+            {/* <Button className="mt-4">Submit Note</Button>  Functionality for this button not implemented */}
         </div>
       </main>
       <footer className="text-center py-6 border-t text-muted-foreground">
